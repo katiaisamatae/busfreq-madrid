@@ -1,0 +1,227 @@
+% ============================================================================
+%  BusFreq Madrid — Bibliografía inicial del estado del arte
+% ----------------------------------------------------------------------------
+%  Referencias semilla organizadas por bloque temático. Son trabajos
+%  reconocidos y reales en cada área, pensados como PUNTO DE PARTIDA.
+%
+%  ⚠️ IMPORTANTE: verifica los metadatos (año, volumen, páginas, DOI) de cada
+%     entrada en su fuente original antes de citarla en la memoria. La
+%     precisión bibliográfica es responsabilidad del autor del TFM.
+%
+%  A medida que leas, añade entradas nuevas y crea su ficha en este directorio.
+% ============================================================================
+
+
+% ===========================================================================
+%  BLOQUE A — Modelos de Machine Learning / forecasting (base metodológica)
+% ===========================================================================
+
+@inproceedings{ke2017lightgbm,
+  title     = {{LightGBM}: A Highly Efficient Gradient Boosting Decision Tree},
+  author    = {Ke, Guolin and Meng, Qi and Finley, Thomas and Wang, Taifeng and
+               Chen, Wei and Ma, Weidong and Ye, Qiwei and Liu, Tie-Yan},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {30},
+  year      = {2017}
+}
+
+@inproceedings{chen2016xgboost,
+  title     = {{XGBoost}: A Scalable Tree Boosting System},
+  author    = {Chen, Tianqi and Guestrin, Carlos},
+  booktitle = {Proceedings of the 22nd ACM SIGKDD International Conference on
+               Knowledge Discovery and Data Mining (KDD)},
+  pages     = {785--794},
+  year      = {2016},
+  doi       = {10.1145/2939672.2939785}
+}
+
+@article{taylor2018prophet,
+  title   = {Forecasting at Scale},
+  author  = {Taylor, Sean J. and Letham, Benjamin},
+  journal = {The American Statistician},
+  volume  = {72},
+  number  = {1},
+  pages   = {37--45},
+  year    = {2018},
+  doi     = {10.1080/00031305.2017.1380080},
+  note    = {Modelo Prophet de Facebook}
+}
+
+@article{hochreiter1997lstm,
+  title   = {Long Short-Term Memory},
+  author  = {Hochreiter, Sepp and Schmidhuber, J{\"u}rgen},
+  journal = {Neural Computation},
+  volume  = {9},
+  number  = {8},
+  pages   = {1735--1780},
+  year    = {1997},
+  doi     = {10.1162/neco.1997.9.8.1735}
+}
+
+@inproceedings{lundberg2017shap,
+  title     = {A Unified Approach to Interpreting Model Predictions},
+  author    = {Lundberg, Scott M. and Lee, Su-In},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {30},
+  year      = {2017},
+  note      = {Valores SHAP}
+}
+
+
+% ===========================================================================
+%  BLOQUE B — Validación de series temporales (rigor metodológico)
+% ===========================================================================
+
+@article{bergmeir2012crossval,
+  title   = {On the Use of Cross-Validation for Time Series Predictor Evaluation},
+  author  = {Bergmeir, Christoph and Ben{\'i}tez, Jos{\'e} M.},
+  journal = {Information Sciences},
+  volume  = {191},
+  pages   = {192--213},
+  year    = {2012},
+  doi     = {10.1016/j.ins.2011.12.028},
+  note    = {Justifica la validación walk-forward frente a k-fold estándar}
+}
+
+@book{hyndman2021fpp,
+  title     = {Forecasting: Principles and Practice},
+  author    = {Hyndman, Rob J. and Athanasopoulos, George},
+  edition   = {3rd},
+  publisher = {OTexts},
+  year      = {2021},
+  note      = {Disponible online en https://otexts.com/fpp3/}
+}
+
+
+% ===========================================================================
+%  BLOQUE C — Predicción de demanda de transporte público
+% ===========================================================================
+
+@article{ma2015lstm,
+  title   = {Long Short-Term Memory Neural Network for Traffic Speed Prediction
+             Using Remote Microwave Sensor Data},
+  author  = {Ma, Xiaolei and Tao, Zhimin and Wang, Yinhai and Yu, Haiyang and
+             Wang, Yunpeng},
+  journal = {Transportation Research Part C: Emerging Technologies},
+  volume  = {54},
+  pages   = {187--197},
+  year    = {2015},
+  doi     = {10.1016/j.trc.2015.03.014}
+}
+
+@article{toque2017forecasting,
+  title   = {Forecasting Dynamic Public Transport Origin-Destination Matrices
+             with Long-Short Term Memory Recurrent Neural Networks},
+  author  = {Toqu{\'e}, Florian and C{\^o}me, Etienne and El Mahrsi, Mohamed Khalil
+             and Oukhellou, Latifa},
+  journal = {IEEE Intelligent Transportation Systems Conference (ITSC)},
+  year    = {2016},
+  note    = {Verificar datos exactos de publicación}
+}
+
+
+% ===========================================================================
+%  BLOQUE D — Optimización de frecuencias / headways (núcleo del Módulo 2)
+% ===========================================================================
+
+@article{furth1981frequencies,
+  title   = {Setting Frequencies on Bus Routes: Theory and Practice},
+  author  = {Furth, Peter G. and Wilson, Nigel H. M.},
+  journal = {Transportation Research Record},
+  number  = {818},
+  pages   = {1--7},
+  year    = {1981},
+  note    = {Trabajo clásico de referencia en frecuencias de bus}
+}
+
+@book{ceder2007transit,
+  title     = {Public Transit Planning and Operation: Theory, Modeling and
+               Practice},
+  author    = {Ceder, Avishai},
+  publisher = {Elsevier / Butterworth-Heinemann},
+  year      = {2007},
+  note      = {Manual de referencia en planificación de transporte público}
+}
+
+@article{verbas2013frequency,
+  title   = {Optimal Allocation of Service Frequencies over Transit Network
+             Routes and Time Periods},
+  author  = {Verbas, {\.I}. {\"O}mer and Mahmassani, Hani S.},
+  journal = {Transportation Research Record},
+  volume  = {2334},
+  number  = {1},
+  pages   = {50--59},
+  year    = {2013},
+  doi     = {10.3141/2334-06}
+}
+
+@article{farahani2013review,
+  title   = {A Review of Urban Transportation Network Design Problems},
+  author  = {Farahani, Reza Zanjirani and Miandoabchi, Elnaz and Szeto, W. Y.
+             and Rashidi, Hannaneh},
+  journal = {European Journal of Operational Research},
+  volume  = {229},
+  number  = {2},
+  pages   = {281--302},
+  year    = {2013},
+  doi     = {10.1016/j.ejor.2013.01.001}
+}
+
+
+% ===========================================================================
+%  BLOQUE E — Variables exógenas: clima y eventos
+% ===========================================================================
+
+@article{singhal2014weather,
+  title   = {Impact of Weather on Urban Transit Ridership},
+  author  = {Singhal, Aditi and Kamga, Camille and Yazici, Anil},
+  journal = {Transportation Research Part A: Policy and Practice},
+  volume  = {69},
+  pages   = {379--391},
+  year    = {2014},
+  doi     = {10.1016/j.tra.2014.09.008}
+}
+
+@article{pereira2015events,
+  title   = {Using Data from the Web to Predict Public Transport Arrivals under
+             Special Events Scenarios},
+  author  = {Pereira, Francisco C. and Rodrigues, Filipe and Ben-Akiva, Moshe},
+  journal = {Journal of Intelligent Transportation Systems},
+  volume  = {19},
+  number  = {3},
+  pages   = {273--288},
+  year    = {2015},
+  doi     = {10.1080/15472450.2013.868284}
+}
+
+@article{rodrigues2019events,
+  title   = {Combining Time-Series and Textual Data for Taxi Demand Prediction
+             in Event Areas: A Deep Learning Approach},
+  author  = {Rodrigues, Filipe and Markou, Ioulia and Pereira, Francisco C.},
+  journal = {Information Fusion},
+  volume  = {49},
+  pages   = {120--129},
+  year    = {2019},
+  doi     = {10.1016/j.inffus.2018.07.007}
+}
+
+
+% ===========================================================================
+%  BLOQUE F — Datos abiertos, GTFS y herramientas
+% ===========================================================================
+
+@misc{gtfs_reference,
+  title        = {General Transit Feed Specification (GTFS) Reference},
+  author       = {{MobilityData / Google}},
+  howpublished = {\url{https://gtfs.org/documentation/schedule/reference/}},
+  note         = {Especificación del formato GTFS},
+  year         = {2024}
+}
+
+@misc{ortools,
+  title        = {{Google OR-Tools}},
+  author       = {{Google}},
+  howpublished = {\url{https://developers.google.com/optimization}},
+  note         = {Suite de optimización (programación lineal entera)},
+  year         = {2024}
+}
