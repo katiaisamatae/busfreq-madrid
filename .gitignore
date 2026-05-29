@@ -1,0 +1,47 @@
+# ---- Datos (nunca subir datos crudos/pesados al repo) ----
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# ---- Secretos / claves API ----
+.env
+*.key
+secrets.yaml
+
+# ---- Python ----
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# ---- MLflow / experimentos ----
+mlruns/
+mlartifacts/
+*.pkl
+*.joblib
+models/*.bin
+
+# ---- Node / frontend ----
+dashboard/frontend/node_modules/
+dashboard/frontend/dist/
+dashboard/frontend/.vite/
+
+# ---- IDE / SO ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- Office temporales ----
+~$*.docx
+~$*.xlsx
+
+# ---- Logs ----
+*.log
+logs/

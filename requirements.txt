@@ -1,0 +1,49 @@
+# ============================================================
+# BusFreq Madrid — dependencias Python
+# Instalar con:  pip install -r requirements.txt
+# Python 3.11 recomendado
+# ============================================================
+
+# ---- Datos e ingesta ----
+pandas>=2.2
+numpy>=1.26
+requests>=2.31
+python-dotenv>=1.0
+pyyaml>=6.0
+
+# ---- GTFS ----
+gtfs-kit>=10.0
+
+# ---- Análisis exploratorio ----
+matplotlib>=3.8
+seaborn>=0.13
+
+# ---- Machine Learning / forecasting ----
+scikit-learn>=1.4
+lightgbm>=4.3
+prophet>=1.1
+# torch: en Windows instalar desde https://pytorch.org/get-started/locally/
+# (descomenta la línea siguiente solo si la versión CPU genérica te sirve)
+# torch>=2.2
+
+# ---- Interpretabilidad ----
+shap>=0.45
+
+# ---- Tracking de experimentos ----
+mlflow>=2.12
+
+# ---- Optimización ----
+ortools>=9.9
+pulp>=2.8
+
+# ---- Backend API ----
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+
+# ---- Notebooks ----
+jupyter>=1.0
+ipykernel>=6.29
+
+# ---- Calidad de código (opcional) ----
+ruff>=0.4
