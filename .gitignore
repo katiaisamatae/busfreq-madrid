@@ -41,7 +41,11 @@ Thumbs.db
 # ---- Office temporales ----
 ~$*.docx
 ~$*.xlsx
+*.backup.docx
 
 # ---- Logs ----
 *.log
 logs/
+
+# ---- Otros ----
+scripts/
