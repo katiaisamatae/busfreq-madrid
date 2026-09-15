@@ -1,0 +1,49 @@
+# Configuración del modelo LightGBM (baseline) — Módulo 1
+# Granularidad DIARIA (día × línea): la demanda pública no baja de ahí.
+# Uso: python demand/train.py --config configs/lgbm.yaml
+
+experiment:
+  name: demand_lgbm_baseline
+  # MLflow con backend SQLite (el file store ./mlruns está deprecado en MLflow 3).
+  # UI: mlflow ui --backend-store-uri sqlite:///mlflow.db
+  mlflow_tracking_uri: sqlite:///mlflow.db
+
+data:
+  processed_path: datos/processed/dataset_features.parquet
+  target: viajeros
+  # Se entrena solo con periodo post-COVID (evita la ruptura 2020-2021).
+  fecha_min: "2022-01-01"
+
+split:
+  # Validación walk-forward — NUNCA usar datos futuros en entrenamiento.
+  strategy: walk_forward
+  n_folds: 4
+  test_period_days: 90          # cada fold prueba ~3 meses
+  horizon_days: 2               # objetivo del TFM: 24-48 h
+  # Test final intocado: los hiperparámetros se ajustan SOLO con tune_folds;
+  # test_fold queda reservado para la métrica out-of-sample honesta.
+  tune_folds: [1, 2, 3]
+  test_fold: 4
+
+features:
+  # Columnas de dataset_features.parquet usadas como predictores.
+  categorical: [linea]
+  calendar: [mes, dia_semana, semana, dia_anio, finde, is_festivo]
+  weather: [tmed, tmin, tmax, prec, velmedia, racha]
+  line_attr: [sat_linea_media]
+  lags: [lag_7, lag_14, lag_28]
+  rolling: [roll_mean_7, roll_std_7, roll_mean_28, roll_std_28]
+
+model:
+  objective: regression_l1        # optimiza MAE
+  metric: mae
+  n_estimators: 1200
+  learning_rate: 0.05
+  num_leaves: 63
+  min_child_samples: 30
+  subsample: 0.8
+  subsample_freq: 1          # necesario para que el submuestreo (bagging) actúe
+  colsample_bytree: 0.8
+  reg_alpha: 0.0
+  reg_lambda: 0.0
+  random_state: 42

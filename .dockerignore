@@ -1,0 +1,15 @@
+# Mantiene el contexto de build pequeño (datos/ se monta como volumen, no se copia)
+datos/
+.venv/
+.git/
+latex/
+docs/
+notebooks/
+codigo/notebooks/
+codigo/back/scripts/
+codigo/back/mlflow.db
+mlruns/
+**/__pycache__/
+**/*.pyc
+*.docx
+.env

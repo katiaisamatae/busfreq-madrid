@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BusFreq Madrid — Cuadro de mando</title>
+  <!-- favicon incrustado: evita el 404 en consola sin añadir un fichero más -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230F75BC'/%3E%3Crect x='7' y='6' width='18' height='16' rx='3' fill='%23fff'/%3E%3Crect x='9.5' y='9' width='13' height='6' rx='1.5' fill='%230F75BC'/%3E%3Ccircle cx='11.5' cy='24' r='2.5' fill='%23fff'/%3E%3Ccircle cx='20.5' cy='24' r='2.5' fill='%23fff'/%3E%3C/svg%3E"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
+
+  <style>
+    :root{
+      --azul:#0F75BC; --azul-osc:#0a5289; --marca:#eef5fa;
+      /* --gris cumple 6,3:1 sobre blanco: los micro-rótulos en mayúsculas de
+         10-11 px necesitan contraste de sobra, no el mínimo justo */
+      --tinta:#1c242b; --gris:#55616c; --regla:#e4e8ec; --banda:#f7f9fa;
+      /* el rojo queda reservado a errores y alarmas; lo "digno de atención"
+         (un desajuste, una espera evitable) va en ámbar */
+      --verde:#1e7a4e; --rojo:#b3362a; --ambar:#8a5a00;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{font-family:"Public Sans",system-ui,sans-serif;color:var(--tinta);background:#fff;
+         font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    .num{font-variant-numeric:tabular-nums}
+    button,select{font-family:inherit}
+
+    /* ---------- cabecera ---------- */
+    header{border-bottom:1px solid var(--regla)}
+    .fila1{max-width:1200px;margin:0 auto;padding:15px 36px;display:flex;align-items:center;justify-content:space-between}
+    .fila1 h1{font-size:17px;font-weight:800;margin:0}
+    .fila1 h1 small{display:block;font-size:11.5px;font-weight:500;color:var(--gris)}
+    .logos{display:flex;align-items:center;gap:20px}
+    .logos img{height:30px;display:block}
+    .logos .sep{width:1px;height:26px;background:var(--regla)}
+    .fila2{max-width:1200px;margin:0 auto;padding:0 36px;display:flex;gap:26px;align-items:baseline}
+    .fila2 a{font-size:13px;font-weight:700;color:var(--gris);text-decoration:none;cursor:pointer;
+             padding:11px 0;border-bottom:2px solid transparent}
+    .fila2 a.act{color:var(--azul-osc);border-bottom-color:var(--azul)}
+    .fila2 .sync{margin-left:auto;font-size:11.5px;color:var(--gris)}
+    .fila2 .sync b{font-weight:700}
+    .ok{color:var(--verde)} .aviso{color:var(--ambar)} .mal{color:var(--rojo)}
+    .neutro{color:var(--gris)}
+
+    /* ---------- tira de días ---------- */
+    .tira{background:var(--banda);border-bottom:1px solid var(--regla)}
+    .tira-in{max-width:1200px;margin:0 auto;padding:0 36px;display:grid;grid-template-columns:repeat(7,1fr)}
+    .dia{padding:11px 13px;border-left:1px solid var(--regla);cursor:pointer;background:none;text-align:left;border-top:0;border-bottom:0;border-right:0}
+    .dia:last-child{border-right:1px solid var(--regla)}
+    .dia .a{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--gris)}
+    .dia .b{font-size:15px;font-weight:800;margin:1px 0}
+    .dia .c{font-size:11px;color:var(--gris)}
+    .dia .c b{color:var(--azul-osc)}
+    .dia.sel{background:#fff;box-shadow:inset 0 -3px 0 var(--azul)}
+    .dia:disabled{opacity:.45;cursor:default}
+
+    main{max-width:1200px;margin:0 auto;padding:26px 36px 80px}
+    .rotulo{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--azul-osc);margin-bottom:12px}
+    .rotulo span{color:var(--gris);font-weight:600;text-transform:none;letter-spacing:0;margin-left:10px}
+
+    /* ---------- KPIs ---------- */
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--tinta);border-bottom:1px solid var(--regla);margin-bottom:30px}
+    .kpi{padding:16px 26px 18px 0}
+    .kpi+.kpi{border-left:1px solid var(--regla);padding-left:26px}
+    .kpi .v{font-size:31px;font-weight:800;letter-spacing:-.02em}
+    .kpi .v small{font-size:15px;color:var(--gris);font-weight:600}
+    .kpi .l{font-size:12px;color:var(--gris);margin-top:1px}
+    .kpi .m{font-size:12px;font-weight:700;margin-top:3px}
+    .m-ok{color:var(--verde)} .m-mal{color:var(--rojo)} .m-info{color:var(--azul-osc)}
+    .m-avi{color:var(--ambar)} .m-neutro{color:var(--gris)}
+
+    /* ---------- retícula ---------- */
+    .malla{display:grid;grid-template-columns:2fr 1fr;gap:0}
+    .col-i{padding-right:34px}
+    .col-d{border-left:1px solid var(--regla);padding-left:34px}
+    .bloque{margin-bottom:34px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris);text-align:left;font-weight:700;padding:7px 8px;border-bottom:1.5px solid var(--tinta)}
+    td{padding:8px;border-bottom:1px solid var(--regla)}
+    td.r,th.r{text-align:right}
+    tr.destacada td{background:var(--marca)}
+    /* ganar y ceder buses no es bueno ni malo: ceder NO es un error, así que
+       no lleva rojo */
+    .sube{color:var(--verde);font-weight:800}.baja{color:var(--azul-osc);font-weight:800}
+    /* las etiquetas de fuente no enlazan a ninguna parte: gris y sin subrayado,
+       para no prometer un enlace que no existe */
+    .fuente-tag{font-size:10.5px;font-weight:700;color:var(--gris);white-space:nowrap;
+                text-decoration:none}
+    .chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+    .chip{font-size:11.5px;font-weight:700;background:var(--marca);color:var(--azul-osc);
+          border-radius:4px;padding:1px 6px;white-space:nowrap}
+    .sin-efecto{color:var(--gris);font-weight:600}
+    .resumen-plan{display:flex;gap:16px;align-items:baseline;font-size:12px;
+                  color:var(--gris);margin:-2px 0 9px}
+    .resumen-plan b{font-size:13.5px}
+    .pie{font-size:11.5px;color:var(--gris);margin-top:8px}
+    .grafico{position:relative;height:230px}
+    .grafico.bajo{height:150px}
+    .cargando{padding:60px 0;color:var(--gris);font-size:13px}
+    .error{padding:20px 0;color:var(--rojo);font-size:13px}
+    .reintentar{display:block;margin-top:11px;font-size:13px;font-weight:700;color:#fff;
+                background:var(--azul);border:0;border-radius:6px;padding:8px 15px;cursor:pointer}
+    select{font-size:12.5px;padding:5px 8px;border:1px solid var(--regla);border-radius:6px;color:var(--tinta);background:#fff}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef } = React;
+
+Chart.defaults.font.family = '"Public Sans", sans-serif';
+Chart.defaults.color = "#5f6b76";
+Chart.defaults.borderColor = "#e4e8ec";
+
+const API = "";
+async function getJSON(url, opts) {
+  const r = await fetch(API + url, opts);
+  if (!r.ok) {
+    let msg = r.statusText;
+    try { msg = (await r.json()).detail || msg; } catch (e) {}
+    throw new Error(msg);
+  }
+  return r.json();
+}
+const post = (url, body) => getJSON(url, {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+});
+
+const DIAS = ["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"];
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio",
+               "agosto","septiembre","octubre","noviembre","diciembre"];
+const fmt = n => (n == null ? "—" : Math.round(n).toLocaleString("es-ES"));
+const fmtM = n => (n >= 1e6 ? (n/1e6).toLocaleString("es-ES",{maximumFractionDigits:2})+" M" : fmt(n));
+/* todo decimal pasa por aquí: en es-ES el separador es la coma, y antes convivían
+   "0.1 %" y "2,9 min" en la misma pantalla */
+const dec = (n, d = 1) => (n == null ? "—" :
+  n.toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d }));
+/* un factor 1,28 se muestra como "≈ +28 %": la ley calibrada no justifica dar
+   dos decimales de un multiplicador */
+const efecto = f => `≈ +${Math.round((f - 1) * 100)} %`;
+/* un evento mueve la predicción solo si su aforo supera el umbral calibrado Y
+   además toca alguna línea piloto (el Metropolitano no lo sirve ninguna) */
+const impacta = e => e.factor > 1 && e.lineas.length > 0;
+const fFranja = f => `${f}–${(f+1)%24} h`;
+const fLarga = iso => { const d = new Date(iso+"T00:00:00");
+  return `${DIAS[(d.getDay()+6)%7]} ${d.getDate()} ${MESES[d.getMonth()].slice(0,3)}`; };
+
+/* ---------- gráfico reutilizable ---------- */
+function Grafico({ construir, deps, bajo }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const c = new Chart(ref.current, construir());
+    return () => c.destroy();
+  }, deps);  // eslint-disable-line
+  return <div className={"grafico" + (bajo ? " bajo" : "")}><canvas ref={ref}/></div>;
+}
+
+/* ---------- cabecera ---------- */
+function Cabecera({ vista, setVista, ctx }) {
+  const fuentes = ctx ? ctx.fuentes : null;
+  const valores = fuentes ? Object.values(fuentes) : [];
+  /* rojo solo si una fuente ha fallado de verdad; "sin clave" o "sin partidos en
+     el rango" son estados informativos, no averías */
+  const clase = valores.some(v => v.startsWith("error")) ? "mal"
+    : valores.length && valores.every(v => v === "ok") ? "ok" : "neutro";
+  const resumen = fuentes
+    ? Object.entries(fuentes).map(([k, v]) => `${k.replace(/_/g, "-")} ${v}`).join(" · ")
+    : "conectando con las fuentes…";
+  return (
+    <header>
+      <div className="fila1">
+        <h1>BusFreq Madrid<small>Cuadro de mando — demanda y frecuencias · 12 líneas piloto</small></h1>
+        <div className="logos">
+          <img src="assets/logo_emt.png" alt="EMT Madrid"/>
+          <div className="sep"></div>
+          <img src="assets/logo_ue.png" alt="Universidad Europea"/>
+        </div>
+      </div>
+      <div className="fila2">
+        <a className={vista==="pred" ? "act" : ""} onClick={() => setVista("pred")}>Predicción</a>
+        <a className={vista==="hist" ? "act" : ""} onClick={() => setVista("hist")}>Análisis histórico</a>
+        <span className="sync">
+          <b className={clase}>●</b> contexto automático — {resumen}
+          {ctx ? ` · ${ctx.generado}` : ""}
+        </span>
+      </div>
+    </header>
+  );
+}
+
+/* ================================================================== */
+/*  VISTA PREDICCIÓN                                                   */
+/* ================================================================== */
+function TiraDias({ ctx, fecha, setFecha }) {
+  return (
+    <div className="tira"><div className="tira-in">
+      {ctx.dias.map(d => {
+        /* solo se anuncian los eventos que mueven la predicción: avisar de una
+           ruta guiada por El Retiro sería ruido */
+        const c = d.clima, ev = d.eventos.filter(impacta).length;
+        const partes = [];
+        if (c.tmax != null) partes.push(`${Math.round(c.tmax)} °C`);
+        const alerta = [];
+        if (c.lluvia) alerta.push(`lluvia ${c.prob_prec} %`);
+        if (ev) alerta.push(`${ev} evento${ev>1?"s":""}`);
+        return (
+          <button key={d.fecha} className={"dia" + (d.fecha===fecha ? " sel" : "")}
+                  onClick={() => setFecha(d.fecha)}>
+            <div className="a">{DIAS[(new Date(d.fecha+"T00:00:00").getDay()+6)%7]}</div>
+            <div className="b num">{new Date(d.fecha+"T00:00:00").getDate()} {MESES[new Date(d.fecha+"T00:00:00").getMonth()].slice(0,3)}</div>
+            <div className="c">{alerta.length ? <b>{alerta.join(" · ")}</b> : (partes.join(" · ") || "—") }{alerta.length && partes.length ? ` · ${partes[0]}` : ""}</div>
+          </button>
+        );
+      })}
+    </div></div>
+  );
+}
+
+function VistaPrediccion({ ctx }) {
+  const [fecha, setFecha] = useState(null);
+  const [plan, setPlan] = useState(null);
+  const [franja, setFranja] = useState(null);
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => { if (ctx && !fecha) setFecha(ctx.dias[Math.min(1, ctx.dias.length-1)].fecha); }, [ctx]);
+  useEffect(() => {
+    if (!fecha) return;
+    setCargando(true); setError(null);
+    post("/api/plan_futuro", { fecha })
+      .then(p => { setPlan(p); setFranja(p.franja_punta); })
+      .catch(e => setError(e.message))
+      .finally(() => setCargando(false));
+  }, [fecha]);
+
+  if (!ctx) return <main><div className="cargando">Consultando AEMET, Open-Meteo, la agenda de Madrid,
+    el calendario de LaLiga y Ticketmaster…</div></main>;
+
+  const dia = ctx.dias.find(d => d.fecha === fecha);
+  const k = plan ? plan.kpis : null;
+  const franjas = plan ? plan.franjas : [];
+  const detalleF = plan && franja != null
+    ? plan.detalle.filter(d => d.franja === franja)
+        .map(d => ({ ...d, delta: d.buses_optimo - d.buses_actual }))
+        .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta) || b.pax - a.pax)
+    : [];
+  const motivo = l => {
+    if (!dia) return "";
+    const ev = dia.eventos.find(e => e.lineas.includes(l) && e.franjas.includes(franja)
+                                     && e.factor > 1);
+    if (ev) return ev.lugar || ev.nombre;
+    return dia.clima.lluvia ? "lluvia prevista" : "reequilibrio";
+  };
+
+  const conImpacto = dia ? dia.eventos.filter(impacta).length : 0;
+  const ventana = e => (e.hora != null
+    ? `${e.hora}:00${e.hora_provisional ? " (sin confirmar)" : ""} · franjas ${e.ventana}`
+    : `día completo · franjas ${e.ventana}`);
+
+  /* ganadores y cedentes de la franja, juntos y ordenados por magnitud: el coste
+     cero solo es creíble si se ve quién cede */
+  const resumenPlan = detalleF.reduce((a, d) => ({
+    gana: a.gana + Math.max(d.delta, 0), cede: a.cede + Math.min(d.delta, 0),
+    igual: a.igual + (d.delta === 0 ? 1 : 0),
+  }), { gana: 0, cede: 0, igual: 0 });
+
+  return (
+    <React.Fragment>
+      <TiraDias ctx={ctx} fecha={fecha} setFecha={setFecha}/>
+      <main>
+        <div className="rotulo">{fecha ? fLarga(fecha) : ""}
+          <span>{plan ? plan.metodo : "predicción con el contexto detectado — sin entrada manual"}</span>
+        </div>
+
+        {error && <div className="error">No se pudo calcular el plan: {error}</div>}
+        {cargando && <div className="cargando">Estimando demanda y ejecutando el optimizador…</div>}
+
+        {plan && !cargando && <React.Fragment>
+        <div className="kpis">
+          <div className="kpi"><div className="v num">{fmtM(k.viajeros_dia)}</div>
+            <div className="l">viajeros previstos</div>
+            <div className={"m " + (k.viajeros_dia > k.viajeros_base ? "m-ok" : "m-neutro")}>
+              {k.viajeros_base
+                ? `${k.viajeros_dia >= k.viajeros_base ? "+" : ""}${dec((k.viajeros_dia/k.viajeros_base-1)*100)} % vs. día tipo`
+                : ""}</div></div>
+          <div className="kpi"><div className="v num">{dec(k.espera_optima)} <small>min</small></div>
+            <div className="l">espera media con el plan</div>
+            <div className="m m-ok">−{dec(k.reduccion_pct)} % frente a no actuar</div></div>
+          <div className="kpi"><div className="v num">{fmt(k.buses_movidos)}<small>/{fmt(k.pares)}</small></div>
+            <div className="l">buses reasignados de {fmt(k.pares)} asignaciones línea-franja</div>
+            <div className="m m-neutro">a coste cero: la misma flota, mejor repartida</div></div>
+          <div className="kpi"><div className="v num">{conImpacto}<small>/{dia ? dia.eventos.length : 0}</small></div>
+            <div className="l">eventos con efecto, de los detectados</div>
+            <div className={"m " + (dia && dia.clima.lluvia ? "m-avi" : "m-neutro")}>
+              {dia && dia.clima.lluvia
+                ? `lluvia prevista (prob. ${dia.clima.prob_prec} %) → sin efecto medido sobre la demanda`
+                : "sin lluvia prevista"}</div></div>
+        </div>
+
+        <div className="malla">
+          <div className="col-i">
+            <div className="bloque">
+              <div className="rotulo">Contexto detectado</div>
+              {dia && (dia.eventos.length || dia.clima.lluvia) ? (
+                <table>
+                  <thead><tr><th>Fuente</th><th>Detección</th><th>Ventana</th>
+                    <th className="r">Líneas</th><th className="r">Efecto</th></tr></thead>
+                  <tbody>
+                    {dia.clima.lluvia &&
+                      <tr><td><span className="fuente-tag">{dia.clima.fuentes.join(" · ") || "meteo"}</span></td>
+                        <td>Lluvia {dia.clima.prec_mm != null ? `${dec(dia.clima.prec_mm)} mm` : ""} (prob. {dia.clima.prob_prec} %)</td>
+                        <td>día completo</td>
+                        <td className="r"><span className="chip">toda la red</span></td>
+                        <td className="r num">{dia.clima.factor_red > 1
+                          ? <b>{efecto(dia.clima.factor_red)}</b>
+                          : <span className="sin-efecto">sin efecto medible</span>}</td></tr>}
+                    {dia.eventos.map((e, i) =>
+                      <tr key={i} className={impacta(e) ? "destacada" : ""}>
+                        <td><span className="fuente-tag">{e.fuente}</span></td>
+                        <td>{e.nombre}{e.lugar ? ` — ${e.lugar}` : ""} (~{fmt(e.asistencia)} asist.)</td>
+                        <td className="num">{ventana(e)}</td>
+                        <td className="r">{e.lineas.length
+                          ? <div className="chips">{e.lineas.map(l => <span key={l} className="chip">{l}</span>)}</div>
+                          : <span className="sin-efecto">ninguna piloto</span>}</td>
+                        <td className="r num">{impacta(e)
+                          ? <b>{efecto(e.factor)}</b>
+                          : <span className="sin-efecto">
+                              {e.factor <= 1 ? "sin efecto medible" : "fuera del piloto"}</span>}</td></tr>)}
+                  </tbody>
+                </table>
+              ) : <p className="pie">Sin lluvia prevista ni eventos con paradas de las líneas piloto a menos de 600 m.
+                    La previsión usa el patrón del tipo de día.</p>}
+              {dia && dia.eventos.some(e => !impacta(e)) &&
+                <p className="pie">Los eventos sin efecto medible se muestran para dejar constancia de que se
+                  detectaron: por debajo de {fmt(13500)} asistentes el impacto en la demanda de bus no es
+                  distinguible de cero en el histórico, así que no se aplica ningún factor.</p>}
+            </div>
+
+            <div className="bloque">
+              <div className="rotulo">Demanda por franja<span>previsión con contexto frente a día tipo</span></div>
+              <Grafico deps={[plan]} construir={() => ({
+                type: "line",
+                data: { labels: franjas.map(f => f.franja + "h"),
+                  datasets: [
+                    { label: "con contexto", data: franjas.map(f => f.pax),
+                      borderColor: "#0F75BC", backgroundColor: "#0F75BC", pointRadius: 0, borderWidth: 2.4, tension: .3 },
+                    { label: "día tipo", data: franjas.map(f => f.pax_base),
+                      borderColor: "#b9c3cc", borderDash: [5,4], pointRadius: 0, borderWidth: 2, tension: .3 },
+                  ]},
+                options: { maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { boxHeight: 2, boxWidth: 18 } } },
+                  scales: { y: { beginAtZero: true, ticks: { callback: v => fmt(v) } } } },
+              })}/>
+            </div>
+
+            <div className="bloque" style={{marginBottom:0}}>
+              <div className="rotulo">Coste-beneficio<span>si además se variara el presupuesto de flota</span></div>
+              <Grafico bajo deps={[plan]} construir={() => ({
+                type: "line",
+                data: { labels: plan.curva.map(p => (p.delta_flota_pct > 0 ? "+" : "") + p.delta_flota_pct + " %"),
+                  datasets: [{ label: "reducción de espera", data: plan.curva.map(p => p.reduccion_pct),
+                    borderColor: "#0F75BC", backgroundColor: "#0F75BC", borderWidth: 2.4, pointRadius: 4, tension: .25 }]},
+                options: { maintainAspectRatio: false,
+                  plugins: { legend: { display: false },
+                    tooltip: { callbacks: { label: c => ` −${c.parsed.y} % de espera` } } },
+                  scales: { y: { ticks: { callback: v => "−" + v + " %" } } } },
+              })}/>
+            </div>
+          </div>
+
+          <div className="col-d">
+            <div className="rotulo">Plan de flota
+              <span>
+                <select value={franja ?? ""} onChange={e => setFranja(+e.target.value)}>
+                  {franjas.map(f => <option key={f.franja} value={f.franja}>
+                    {fFranja(f.franja)}{f.franja === plan.franja_punta ? " · punta" : ""}</option>)}
+                </select>
+              </span>
+            </div>
+            <div className="resumen-plan">
+              <span><b className="sube">+{resumenPlan.gana}</b> ganan</span>
+              <span><b className="baja">{resumenPlan.cede}</b> ceden</span>
+              <span>{resumenPlan.igual} sin cambio</span>
+            </div>
+            <table>
+              <thead><tr><th>Línea</th><th>Motivo</th><th className="r">Hoy</th><th className="r">Plan</th><th className="r">Δ</th></tr></thead>
+              <tbody>
+                {detalleF.map(d =>
+                  <tr key={d.linea} className={Math.abs(d.delta) >= 2 ? "destacada" : ""}>
+                    <td><b>{d.linea}</b></td>
+                    <td style={{fontSize:"12px",color:"var(--gris)"}}>{d.delta > 0 ? motivo(d.linea) : (d.delta < 0 ? "cede — baja ocupación" : "sin cambios")}</td>
+                    <td className="r num">{d.buses_actual}</td>
+                    <td className="r num">{d.buses_optimo}</td>
+                    <td className={"r num " + (d.delta > 0 ? "sube" : d.delta < 0 ? "baja" : "")}>
+                      {d.delta > 0 ? "+" + d.delta : d.delta || "="}</td>
+                  </tr>)}
+              </tbody>
+            </table>
+            <p className="pie">Reasignación a flota constante por franja (ILP, OR-Tools). Oferta de referencia:
+              media del tipo de día {plan.tipo_dia}.</p>
+          </div>
+        </div>
+        </React.Fragment>}
+      </main>
+    </React.Fragment>
+  );
+}
+
+/* ================================================================== */
+/*  VISTA HISTÓRICO                                                    */
+/* ================================================================== */
+function VistaHistorico() {
+  const [pred, setPred] = useState(null);
+  const [diag, setDiag] = useState(null);
+  const [mes, setMes] = useState("");
+  const [linea, setLinea] = useState("TODAS");
+  const [error, setError] = useState(null);
+  const [cargandoDiag, setCargandoDiag] = useState(true);
+
+  useEffect(() => { getJSON("/api/prediccion").then(setPred).catch(e => setError(e.message)); }, []);
+  useEffect(() => {
+    setCargandoDiag(true);
+    getJSON("/api/diagnostico" + (mes ? `?mes=${mes}` : ""))
+      .then(d => { setDiag(d); if (!mes) setMes(d.mes); })
+      .catch(e => setError(e.message))
+      .finally(() => setCargandoDiag(false));
+  }, [mes]);
+
+  const serie = useMemo(() => {
+    if (!pred || !diag) return [];
+    const porFecha = {};
+    Object.entries(pred.lineas).forEach(([l, g]) => {
+      if (linea !== "TODAS" && l !== linea) return;
+      g.serie.forEach(p => {
+        if (!p.fecha.startsWith(diag.mes)) return;
+        porFecha[p.fecha] = porFecha[p.fecha] || { real: 0, pred: 0, p10: 0, p90: 0 };
+        porFecha[p.fecha].real += p.real; porFecha[p.fecha].pred += p.pred;
+        porFecha[p.fecha].p10 += p.p10; porFecha[p.fecha].p90 += p.p90;
+      });
+    });
+    return Object.entries(porFecha).sort((a,b) => a[0] < b[0] ? -1 : 1)
+      .map(([f, v]) => ({ fecha: f, ...v }));
+  }, [pred, diag, linea]);
+
+  /* de peor a mejor: lo interesante es qué líneas fallan más, no las que van bien */
+  const mapeTabla = useMemo(() => pred
+    ? Object.entries(pred.lineas).map(([l, g]) => ({ linea: l, mape: g.mape }))
+        .sort((a, b) => b.mape - a.mape)
+    : [], [pred]);
+
+  if (error) return <main><div className="error">{error}</div></main>;
+  if (!pred || !diag) return <main><div className="cargando">
+    Cargando histórico… {cargandoDiag && "(el diagnóstico ejecuta el optimizador retrospectivo; la primera vez tarda ~1 min)"}</div></main>;
+
+  const k = diag.kpis;
+  const [anio, mesN] = diag.mes.split("-");
+
+  return (
+    <main>
+      <div className="rotulo">{MESES[+mesN-1]} {anio}
+        <span>demanda real, precisión del modelo y desajustes del periodo</span>
+        <span style={{marginLeft:"14px"}}>
+          <select value={diag.mes} onChange={e => setMes(e.target.value)}>
+            {diag.meses_disponibles.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </span>
+      </div>
+
+      <div className="kpis">
+        <div className="kpi"><div className="v num">{fmtM(k.viajeros)}</div>
+          <div className="l">viajeros reales (12 líneas)</div>
+          <div className="m m-info">{k.dias_analizados} días analizados</div></div>
+        <div className="kpi"><div className="v num">{dec(pred.mape_global)} <small>%</small></div>
+          <div className="l">MAPE del modelo (walk-forward)</div>
+          <div className="m m-ok">LightGBM vs. baseline naive: ≈ −50 % de MAE</div></div>
+        <div className="kpi"><div className="v num">{k.dias_desajuste}<small>/{k.dias_analizados}</small></div>
+          <div className="l">días con desajuste oferta-demanda</div>
+          <div className="m m-avi">reducción de espera posible ≥ 3 %</div></div>
+        <div className="kpi"><div className="v num">{fmt(k.espera_evitable_h)} <small>h</small></div>
+          <div className="l">espera evitable acumulada</div>
+          <div className="m m-neutro">con la misma flota, mejor repartida</div></div>
+      </div>
+
+      <div className="malla">
+        <div className="col-i">
+          <div className="rotulo">Real frente a predicho
+            <span>
+              <select value={linea} onChange={e => setLinea(e.target.value)}>
+                <option value="TODAS">todas las líneas</option>
+                {Object.keys(pred.lineas).sort((a,b)=>+a-+b).map(l => <option key={l} value={l}>línea {l}</option>)}
+              </select>
+            </span>
+          </div>
+          <Grafico deps={[serie]} construir={() => ({
+            type: "line",
+            data: { labels: serie.map(p => +p.fecha.slice(8)),
+              datasets: [
+                /* la banda va primero y se rellena hasta el dataset siguiente (p90) */
+                { label: "banda p10–p90", data: serie.map(p => p.p10),
+                  borderColor: "transparent", backgroundColor: "rgba(15,117,188,.13)",
+                  pointRadius: 0, fill: "+1", tension: .25 },
+                { label: "_p90", data: serie.map(p => p.p90), borderColor: "transparent",
+                  pointRadius: 0, tension: .25 },
+                { label: "real", data: serie.map(p => p.real),
+                  borderColor: "#0F75BC", pointRadius: 0, borderWidth: 2.2, tension: .25 },
+                { label: "predicho", data: serie.map(p => p.pred),
+                  borderColor: "#8c98a3", borderDash: [5,4], pointRadius: 0, borderWidth: 1.8, tension: .25 },
+              ]},
+            options: { maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+              plugins: { legend: { labels: { boxHeight: 2, boxWidth: 18,
+                /* oculta el dataset auxiliar que solo sirve de techo del relleno */
+                filter: i => i.text !== "_p90" } } },
+              /* el eje arranca en cero: si no, una diferencia del 3 % parece del 30 % */
+              scales: { y: { beginAtZero: true, ticks: { callback: v => fmtM(v) } } } },
+          })}/>
+          <p className="pie">Predicción walk-forward del modelo, sin ver el futuro. Los valles semanales
+            son sábado y domingo o festivo; factores medidos en el histórico: sábado ×{dec(pred.factores.sabado, 2)},
+            festivo ×{dec(pred.factores.festivo, 2)}, lluvia ×{dec(pred.factores.lluvia, 2)}
+            (comparando días del mismo mes; el efecto no es significativo, así que el plan
+            no aplica factor de lluvia).
+            La banda p10–p90 sale de dos modelos cuantílicos; su cobertura real es del{" "}
+            {dec(pred.cobertura_global_pct)} % frente al 80 % nominal, así que es demasiado
+            estrecha (limitación documentada en la memoria).</p>
+        </div>
+
+        <div className="col-d">
+          <div className="rotulo">Error por línea (MAPE)</div>
+          <table>
+            <thead><tr><th>Línea</th><th className="r">MAPE</th></tr></thead>
+            <tbody>
+              {mapeTabla.map((r, i) =>
+                <tr key={r.linea} className={i < 2 ? "destacada" : ""}>
+                  <td><b>{r.linea}</b></td>
+                  <td className="r num">{dec(r.mape)} %</td></tr>)}
+            </tbody>
+          </table>
+          <p className="pie">Las líneas con más error son las más sensibles a eventos: el argumento
+            para incorporarlos como contexto en la vista de predicción.</p>
+        </div>
+      </div>
+
+      <div style={{marginTop:"36px"}}>
+        <div className="rotulo">Diagnóstico: qué se hizo mal
+          <span>mayores desajustes del mes según el optimizador retrospectivo</span></div>
+        {cargandoDiag ? <div className="cargando">Ejecutando el optimizador retrospectivo…</div> :
+        <table>
+          <thead><tr><th>Fecha</th><th>Línea</th><th>Franja</th><th>Causa probable</th>
+            <th className="r">Buses real → óptimo</th><th className="r">Espera</th><th className="r">Evitable</th></tr></thead>
+          <tbody>
+            {diag.casos.map((c, i) =>
+              <tr key={i} className={i < 2 ? "destacada" : ""}>
+                <td className="num">{fLarga(c.fecha)}</td>
+                <td><b>{c.linea}</b></td>
+                <td className="num">{fFranja(c.franja)}</td>
+                <td>{c.causa}</td>
+                <td className="r num">{c.buses_actual} → {c.buses_optimo}</td>
+                <td className="r num">−{dec(c.mejora_pct)} %</td>
+                <td className="r num">{dec(c.evitable_h)} h</td>
+              </tr>)}
+          </tbody>
+        </table>}
+        <p className="pie">Óptimo calculado a posteriori con la demanda real conocida (ILP a flota constante).
+          Las causas se contrastan con la meteorología y el calendario del histórico; los picos no explicados
+          apuntan a eventos — la motivación de la predicción automática.</p>
+      </div>
+    </main>
+  );
+}
+
+/* ================================================================== */
+function App() {
+  const [vista, setVista] = useState("pred");
+  const [ctx, setCtx] = useState(null);
+  const [errorCtx, setErrorCtx] = useState(null);
+  const [intento, setIntento] = useState(0);
+
+  /* si el contexto falla hay que decirlo y ofrecer reintentar: antes el catch
+     dejaba ctx=null y la vista se quedaba en "conectando…" para siempre */
+  useEffect(() => {
+    setErrorCtx(null);
+    getJSON("/api/contexto")
+      .then(c => { setCtx(c); setErrorCtx(null); })
+      .catch(e => { setCtx(null); setErrorCtx(e.message); });
+  }, [intento]);
+
+  return (
+    <React.Fragment>
+      <Cabecera vista={vista} setVista={setVista} ctx={ctx}/>
+      {vista === "hist" ? <VistaHistorico/>
+        : errorCtx ? <main><div className="error">
+            No se pudo obtener el contexto automático: {errorCtx}
+            <button className="reintentar" onClick={() => setIntento(i => i + 1)}>Reintentar</button>
+          </div></main>
+        : <VistaPrediccion ctx={ctx}/>}
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

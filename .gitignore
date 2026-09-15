@@ -1,8 +1,8 @@
 # ---- Datos (nunca subir datos crudos/pesados al repo) ----
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
+datos/raw/*
+datos/processed/*
+!datos/raw/.gitkeep
+!datos/processed/.gitkeep
 
 # ---- Secretos / claves API ----
 .env
@@ -23,14 +23,18 @@ __pycache__/
 # ---- MLflow / experimentos ----
 mlruns/
 mlartifacts/
+mlflow.db
 *.pkl
 *.joblib
 models/*.bin
 
 # ---- Node / frontend ----
-dashboard/frontend/node_modules/
-dashboard/frontend/dist/
-dashboard/frontend/.vite/
+codigo/front/node_modules/
+codigo/front/dist/
+codigo/front/.vite/
+
+# ---- Artefactos de test (Playwright) ----
+.playwright-mcp/
 
 # ---- IDE / SO ----
 .vscode/
@@ -47,5 +51,28 @@ Thumbs.db
 *.log
 logs/
 
+# ---- LaTeX (artefactos de compilacion) ----
+*.aux
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.toc
+*.run.xml
+*.out
+*.synctex.gz
+
+# ---- Volcados de paquetes en raiz (instalacion erronea) ----
+/Lib/
+/share/
+
+# ---- Temporales de Windows / HP Sure Click ----
+~BROMIUM/
+
 # ---- Otros ----
-scripts/
+codigo/back/scripts/
+
+# ---- Instrucciones de Claude Code (no versionar) ----
+CLAUDE.md

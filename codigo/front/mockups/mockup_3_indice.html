@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mock-up 3 — Índice lateral · BusFreq Madrid</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#0F75BC; --azul-osc:#0a5289; --marca:#eef5fa;
+    --tinta:#1c242b; --gris:#5f6b76; --regla:#e4e8ec; --banda:#f7f9fa;
+    --verde:#1e7a4e; --rojo:#b3362a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Public Sans',sans-serif}
+  body{background:#fff;color:var(--tinta);font-size:14px;line-height:1.55}
+  .num{font-variant-numeric:tabular-nums}
+  .app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+
+  /* ------- índice lateral ------- */
+  aside{border-right:1px solid var(--regla);background:var(--banda);padding:26px 24px;display:flex;flex-direction:column}
+  aside h1{font-size:17px;font-weight:800}
+  aside .sub{font-size:11.5px;color:var(--gris);margin:2px 0 28px}
+  .veo{display:flex;flex-direction:column;gap:2px;margin-bottom:30px}
+  .veo a{font-size:13.5px;font-weight:700;color:var(--gris);text-decoration:none;cursor:pointer;padding:8px 12px;border-left:3px solid transparent}
+  .veo a.act{color:var(--azul-osc);border-left-color:var(--azul);background:#fff}
+  .veo a small{display:block;font-size:11px;font-weight:500;color:var(--gris)}
+  .lat-t{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gris);margin-bottom:10px}
+  .fuentes{font-size:12px;color:var(--gris);line-height:2}
+  .fuentes b{color:var(--verde)}
+  .logos{margin-top:auto;padding-top:26px;border-top:1px solid var(--regla);display:flex;align-items:center;gap:16px}
+  .logos img{height:26px;display:block}
+
+  /* ------- contenido ------- */
+  main{padding:28px 42px 90px;max-width:1000px}
+  .miga{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--azul-osc)}
+  h2{font-size:23px;font-weight:800;letter-spacing:-.015em;margin:4px 0 4px}
+  .entradilla{font-size:14px;color:var(--gris);max-width:720px;margin-bottom:24px}
+  .entradilla b{color:var(--tinta)}
+
+  .dias{display:flex;border-top:1px solid var(--regla);border-bottom:1px solid var(--regla);margin-bottom:26px}
+  .dia{flex:1;padding:10px 12px;border-right:1px solid var(--regla);cursor:pointer}
+  .dia:first-child{border-left:1px solid var(--regla)}
+  .dia .a{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--gris)}
+  .dia .b{font-size:14px;font-weight:800}
+  .dia .c{font-size:10.5px;color:var(--gris)}
+  .dia .c b{color:var(--azul-osc)}
+  .dia.sel{box-shadow:inset 0 -3px 0 var(--azul);background:var(--marca)}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--tinta);border-bottom:1px solid var(--regla);margin-bottom:32px}
+  .kpi{padding:15px 24px 16px 0}
+  .kpi+.kpi{border-left:1px solid var(--regla);padding-left:24px}
+  .kpi .v{font-size:29px;font-weight:800;letter-spacing:-.02em}
+  .kpi .v small{font-size:14px;color:var(--gris);font-weight:600}
+  .kpi .l{font-size:11.5px;color:var(--gris)}
+  .kpi .m{font-size:11.5px;font-weight:700;margin-top:2px}
+  .m.ok{color:var(--verde)} .m.mal{color:var(--rojo)} .m.info{color:var(--azul-osc)}
+
+  h3{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--tinta);margin:0 0 12px}
+  h3 span{color:var(--gris);font-weight:600;text-transform:none;letter-spacing:0;margin-left:10px}
+  .seccion{margin-bottom:38px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris);text-align:left;font-weight:700;padding:7px 9px;border-bottom:1.5px solid var(--tinta)}
+  td{padding:8.5px 9px;border-bottom:1px solid var(--regla)}
+  td.r,th.r{text-align:right}
+  tr.destacada td{background:var(--marca)}
+  .sube{color:var(--verde);font-weight:800}.baja{color:var(--rojo);font-weight:800}
+  .fuente-tag{font-size:10.5px;font-weight:700;color:var(--azul-osc)}
+  .pie{font-size:11.5px;color:var(--gris);margin-top:8px}
+  svg text{font-family:'Public Sans',sans-serif}
+  .oculto{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside>
+  <h1>BusFreq Madrid</h1>
+  <div class="sub">Demanda y frecuencias<br>12 líneas piloto</div>
+
+  <div class="veo">
+    <a id="tab-pred" class="act" onclick="ver('pred')">Predicción<small>plan para las próximas 24–48 h</small></a>
+    <a id="tab-hist" onclick="ver('hist')">Análisis histórico<small>qué pasó y qué se hizo mal</small></a>
+  </div>
+
+  <div class="lat-t">Fuentes de contexto</div>
+  <div class="fuentes">
+    <b>●</b> AEMET — 07:00<br>
+    <b>●</b> Open-Meteo — 07:00<br>
+    <b>●</b> Agenda Madrid — 06:30<br>
+    <b>●</b> Ticketmaster — 06:30
+  </div>
+
+  <div class="logos">
+    <img src="../assets/logo_emt.png" alt="EMT Madrid">
+    <img src="../assets/logo_ue.png" alt="Universidad Europea">
+  </div>
+</aside>
+
+<main>
+
+<!-- ════════════════ PREDICCIÓN ════════════════ -->
+<section id="v-pred">
+  <div class="miga">Predicción · miércoles 15 de julio</div>
+  <h2>Lluvia vespertina y concierto en el Metropolitano</h2>
+  <p class="entradilla">El sistema ha detectado <b>tres factores</b> en las APIs — sin entrada manual — y propone
+  un plan a <b>coste cero</b>: reasignar 14 buses recorta la espera media un 13,9 %.</p>
+
+  <div class="dias">
+    <div class="dia"><div class="a">LUN</div><div class="b num">13</div><div class="c">31 °C</div></div>
+    <div class="dia"><div class="a">MAR</div><div class="b num">14</div><div class="c">33 °C</div></div>
+    <div class="dia sel"><div class="a">MIÉ</div><div class="b num">15</div><div class="c"><b>lluvia · 2 ev</b></div></div>
+    <div class="dia"><div class="a">JUE</div><div class="b num">16</div><div class="c">29 °C · 1 ev</div></div>
+    <div class="dia"><div class="a">VIE</div><div class="b num">17</div><div class="c"><b>3 ev</b></div></div>
+    <div class="dia"><div class="a">SÁB</div><div class="b num">18</div><div class="c">34 °C</div></div>
+    <div class="dia"><div class="a">DOM</div><div class="b num">19</div><div class="c">35 °C</div></div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v num">1,41 <small>M</small></div><div class="l">viajeros previstos</div><div class="m ok">+9,4 % vs. miércoles medio</div></div>
+    <div class="kpi"><div class="v num">6,8 <small>min</small></div><div class="l">espera media con plan</div><div class="m ok">−13,9 %</div></div>
+    <div class="kpi"><div class="v num">14</div><div class="l">buses reasignados</div><div class="m info">coste cero</div></div>
+    <div class="kpi"><div class="v num">2</div><div class="l">alertas de saturación</div><div class="m mal">143 y 70 · 18–22 h</div></div>
+  </div>
+
+  <div class="seccion">
+    <h3>Contexto detectado<span>de dónde sale la previsión</span></h3>
+    <table>
+      <tr><th>Fuente</th><th>Detección</th><th>Ventana</th><th>Líneas</th><th class="r">Efecto aplicado</th></tr>
+      <tr><td><span class="fuente-tag">AEMET · Open-Meteo</span></td><td>Lluvia 4,2 mm, probabilidad 80 %</td><td class="num">17–22 h</td><td>red</td><td class="r num"><b>+6 %</b></td></tr>
+      <tr class="destacada"><td><span class="fuente-tag">Ticketmaster</span></td><td>Concierto — Estadio Metropolitano, ~62 000 asistentes</td><td class="num">21:00</td><td class="num"><b>143, 70</b></td><td class="r num"><b>+80 % · +45 %</b></td></tr>
+      <tr><td><span class="fuente-tag">datos.madrid.es</span></td><td>Feria del Libro de Verano — El Retiro</td><td class="num">11–21 h</td><td class="num">19, 61</td><td class="r num">+15 % · +10 %</td></tr>
+    </table>
+    <p class="pie">Eventos georreferenciados contra paradas GTFS a &lt; 600 m del recinto; efecto calibrado con eventos análogos del histórico.</p>
+  </div>
+
+  <div class="seccion">
+    <h3>Demanda por franja<span>previsión con contexto frente a miércoles tipo</span></h3>
+    <svg viewBox="0 0 880 195" width="100%">
+      <line x1="40" y1="10" x2="40" y2="157" stroke="#e4e8ec"/>
+      <line x1="40" y1="157" x2="865" y2="157" stroke="#1c242b" stroke-width="1.2"/>
+      <text x="34" y="16" text-anchor="end" font-size="9" fill="#5f6b76">120k</text>
+      <text x="34" y="160" text-anchor="end" font-size="9" fill="#5f6b76">0</text>
+      <rect x="565" y="10" width="190" height="147" fill="#0F75BC" opacity=".06"/>
+      <text x="660" y="24" text-anchor="middle" font-size="9.5" fill="#0a5289" font-weight="700">lluvia + concierto</text>
+      <polyline fill="none" stroke="#b9c3cc" stroke-width="2" stroke-dasharray="5 4"
+        points="56,150 122,107 188,64 254,78 320,86 386,80 452,74 518,68 584,58 650,63 716,107 782,134 852,148"/>
+      <polyline fill="none" stroke="#0F75BC" stroke-width="2.4"
+        points="56,150 122,105 188,60 254,74 320,82 386,76 452,68 518,61 584,35 650,30 716,78 782,117 852,141"/>
+      <text x="56" y="176" font-size="9" fill="#5f6b76">4 h</text>
+      <text x="452" y="176" font-size="9" fill="#5f6b76" text-anchor="middle">14 h</text>
+      <text x="852" y="176" font-size="9" fill="#5f6b76" text-anchor="end">2 h</text>
+      <text x="726" y="42" font-size="10" fill="#0F75BC" font-weight="700">con contexto</text>
+      <text x="726" y="56" font-size="10" fill="#8d99a3" font-weight="700">día tipo</text>
+    </svg>
+  </div>
+
+  <div class="seccion" style="margin-bottom:0">
+    <h3>Plan de flota · franja 18–22 h<span>reasignación a flota constante (ILP)</span></h3>
+    <table>
+      <tr><th>Línea</th><th>Motivo</th><th class="r">Hoy</th><th class="r">Plan</th><th class="r">Δ</th><th class="r">Espera</th></tr>
+      <tr class="destacada"><td><b>143</b></td><td>concierto Metropolitano</td><td class="r num">8</td><td class="r num">12</td><td class="r num sube">+4</td><td class="r num">−31 %</td></tr>
+      <tr class="destacada"><td><b>70</b></td><td>concierto Metropolitano</td><td class="r num">9</td><td class="r num">11</td><td class="r num sube">+2</td><td class="r num">−18 %</td></tr>
+      <tr><td><b>19</b></td><td>feria Retiro + lluvia</td><td class="r num">10</td><td class="r num">11</td><td class="r num sube">+1</td><td class="r num">−9 %</td></tr>
+      <tr><td><b>29</b></td><td>cede — ocupación 52 %</td><td class="r num">11</td><td class="r num">9</td><td class="r num baja">−2</td><td class="r num">+4 %</td></tr>
+      <tr><td><b>56</b></td><td>cede — ocupación 49 %</td><td class="r num">10</td><td class="r num">8</td><td class="r num baja">−2</td><td class="r num">+5 %</td></tr>
+      <tr><td><b>14</b></td><td>cede — ocupación 61 %</td><td class="r num">12</td><td class="r num">10</td><td class="r num baja">−2</td><td class="r num">+3 %</td></tr>
+      <tr><td><b>210, 22</b></td><td>ceden 1 vehículo cada una</td><td class="r num">16</td><td class="r num">14</td><td class="r num baja">−2</td><td class="r num">+2–3 %</td></tr>
+    </table>
+    <p class="pie">El resto de líneas (82, 61, 115, 46) mantiene su asignación en esta franja.</p>
+  </div>
+</section>
+
+<!-- ════════════════ HISTÓRICO ════════════════ -->
+<section id="v-hist" class="oculto">
+  <div class="miga">Análisis histórico · abril 2026</div>
+  <h2>412 horas de espera evitable — y todas eran anticipables</h2>
+  <p class="entradilla">Con la demanda real conocida, el optimizador retrospectivo cuantifica cada desajuste
+  de la programación fija. Cada causa estaba disponible <b>de antemano</b> en una API pública.</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v num">38,1 <small>M</small></div><div class="l">viajeros reales</div><div class="m ok">+3,2 % vs. abril 2025</div></div>
+    <div class="kpi"><div class="v num">8,7 <small>%</small></div><div class="l">MAPE del modelo</div><div class="m ok">−50 % vs. baseline</div></div>
+    <div class="kpi"><div class="v num">17<small>/30</small></div><div class="l">días con desajuste</div><div class="m mal">oferta ≠ demanda</div></div>
+    <div class="kpi"><div class="v num">412 <small>h</small></div><div class="l">espera evitable</div><div class="m mal">misma flota, mejor reparto</div></div>
+  </div>
+
+  <div class="seccion">
+    <h3>Real frente a predicho<span>demanda diaria, 12 líneas</span></h3>
+    <svg viewBox="0 0 880 190" width="100%">
+      <line x1="42" y1="10" x2="42" y2="152" stroke="#e4e8ec"/>
+      <line x1="42" y1="152" x2="865" y2="152" stroke="#1c242b" stroke-width="1.2"/>
+      <text x="36" y="16" text-anchor="end" font-size="9" fill="#5f6b76">1,6 M</text>
+      <text x="36" y="155" text-anchor="end" font-size="9" fill="#5f6b76">0,4 M</text>
+      <rect x="566" y="10" width="32" height="142" fill="#b3362a" opacity=".08"/>
+      <text x="582" y="24" text-anchor="middle" font-size="9" fill="#b3362a" font-weight="700">18–19 abr</text>
+      <polyline fill="none" stroke="#0F75BC" stroke-width="2"
+        points="52,48 80,44 108,47 136,41 164,53 192,118 220,133 248,46 276,43 304,39 332,38 360,50 388,116 416,131 444,44 472,41 500,37 528,35 556,48 584,114 612,128 640,39 668,36 696,34 724,34 752,46 780,112 808,126 850,36"/>
+      <polyline fill="none" stroke="#b9c3cc" stroke-width="1.7" stroke-dasharray="5 4"
+        points="52,54 80,47 108,51 136,46 164,59 192,123 220,137 248,51 276,47 304,43 332,42 360,55 388,120 416,135 444,49 472,45 500,41 528,39 556,54 584,118 612,132 640,44 668,40 696,38 724,38 752,52 780,116 808,130 850,41"/>
+      <text x="760" y="28" font-size="10" fill="#0F75BC" font-weight="700">real</text>
+      <text x="760" y="42" font-size="10" fill="#8d99a3" font-weight="700">predicho</text>
+    </svg>
+  </div>
+
+  <div class="seccion" style="margin-bottom:0">
+    <h3>Qué se hizo mal, caso a caso<span>y la fuente que lo habría anticipado</span></h3>
+    <table>
+      <tr><th>Fecha</th><th>Línea</th><th>Franja</th><th>Causa identificada</th><th class="r">Ocupación</th><th class="r">Real → óptimo</th><th class="r">Espera evitable</th><th>Anticipable con</th></tr>
+      <tr class="destacada"><td class="num">sáb 18 abr</td><td><b>82</b></td><td class="num">18–22</td><td>Partido en el Bernabéu sin refuerzo</td><td class="r num baja">96 %</td><td class="r num">7 → 10</td><td class="r num">−31 %</td><td><span class="fuente-tag">Ticketmaster</span></td></tr>
+      <tr class="destacada"><td class="num">sáb 18 abr</td><td><b>143</b></td><td class="num">22–02</td><td>Salida del evento, oferta nocturna plana</td><td class="r num baja">91 %</td><td class="r num">5 → 7</td><td class="r num">−28 %</td><td><span class="fuente-tag">Ticketmaster</span></td></tr>
+      <tr><td class="num">mar 7 abr</td><td><b>19</b></td><td class="num">7–10</td><td>Lluvia intensa (11 mm), demanda +8 %</td><td class="r num baja">88 %</td><td class="r num">9 → 11</td><td class="r num">−17 %</td><td><span class="fuente-tag">AEMET</span></td></tr>
+      <tr><td class="num">dom 12 abr</td><td><b>29</b></td><td class="num">10–14</td><td>Sobreoferta dominical, flota ociosa</td><td class="r num sube">31 %</td><td class="r num">10 → 6</td><td class="r num">reasignable</td><td><span class="fuente-tag">calendario</span></td></tr>
+      <tr><td class="num">jue 23 abr</td><td><b>61</b></td><td class="num">17–21</td><td>Evento cultural del Retiro ignorado</td><td class="r num baja">84 %</td><td class="r num">8 → 9</td><td class="r num">−11 %</td><td><span class="fuente-tag">datos.madrid.es</span></td></tr>
+    </table>
+    <p class="pie">Ocupación del histórico de saturación; óptimo del ILP retrospectivo con demanda real.</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+function ver(v){
+  document.getElementById('v-pred').classList.toggle('oculto', v!=='pred');
+  document.getElementById('v-hist').classList.toggle('oculto', v!=='hist');
+  document.getElementById('tab-pred').classList.toggle('act', v==='pred');
+  document.getElementById('tab-hist').classList.toggle('act', v==='hist');
+}
+</script>
+</body>
+</html>

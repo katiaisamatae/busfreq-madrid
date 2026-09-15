@@ -1,7 +1,7 @@
 # ============================================================
 # BusFreq Madrid — dependencias Python
 # Instalar con:  pip install -r requirements.txt
-# Python 3.11 recomendado
+# Python 3.12 (imagen Docker y CI). El .venv de desarrollo usa 3.13 (compatible).
 # ============================================================
 
 # ---- Datos e ingesta ----
@@ -10,6 +10,7 @@ numpy>=1.26
 requests>=2.31
 python-dotenv>=1.0
 pyyaml>=6.0
+holidays>=0.50         # festivos ES/MD — features.py, contexto.py, optimize.py
 
 # ---- GTFS ----
 gtfs-kit>=10.0
@@ -34,7 +35,6 @@ mlflow>=2.12
 
 # ---- Optimización ----
 ortools>=9.9
-pulp>=2.8
 
 # ---- Backend API ----
 fastapi>=0.110
@@ -45,5 +45,6 @@ pydantic>=2.6
 jupyter>=1.0
 ipykernel>=6.29
 
-# ---- Calidad de código (opcional) ----
+# ---- Tests y calidad de código ----
+pytest>=8.0
 ruff>=0.4

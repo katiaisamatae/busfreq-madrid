@@ -1,0 +1,61 @@
+# Config de LightGBM con hiperparámetros afinados (demand/tune.py).
+# MAE de SELECCIÓN sobre folds de tuning: 615.39 (base 622.84, +1.2%). La métrica HONESTA
+# out-of-sample es la del test_fold intocado (ver demand/predict.py).
+experiment:
+  name: demand_lgbm_tuned
+  mlflow_tracking_uri: sqlite:///mlflow.db
+data:
+  processed_path: datos/processed/dataset_features.parquet
+  target: viajeros
+  fecha_min: '2022-01-01'
+split:
+  strategy: walk_forward
+  n_folds: 4
+  test_period_days: 90
+  horizon_days: 2
+  tune_folds:
+  - 1
+  - 2
+  - 3
+  test_fold: 4
+features:
+  categorical:
+  - linea
+  calendar:
+  - mes
+  - dia_semana
+  - semana
+  - dia_anio
+  - finde
+  - is_festivo
+  weather:
+  - tmed
+  - tmin
+  - tmax
+  - prec
+  - velmedia
+  - racha
+  line_attr:
+  - sat_linea_media
+  lags:
+  - lag_7
+  - lag_14
+  - lag_28
+  rolling:
+  - roll_mean_7
+  - roll_std_7
+  - roll_mean_28
+  - roll_std_28
+model:
+  objective: regression_l1
+  metric: mae
+  subsample_freq: 1
+  random_state: 42
+  num_leaves: 63
+  learning_rate: 0.02
+  n_estimators: 2000
+  min_child_samples: 30
+  subsample: 0.9
+  colsample_bytree: 0.7
+  reg_alpha: 0.0
+  reg_lambda: 1.0

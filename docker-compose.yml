@@ -1,0 +1,30 @@
+# ============================================================
+# BusFreq Madrid — levanta el dashboard completo (front + back).
+#
+#   docker compose up --build     # construir y arrancar
+#   docker compose up -d          # en segundo plano
+#   docker compose down           # parar
+#
+# -> http://localhost:8000/
+#
+# Un único servicio: el backend FastAPI sirve la API y la SPA.
+# ============================================================
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: busfreq-madrid
+    container_name: busfreq-madrid
+    ports:
+      - "8000:8000"
+    # Secretos (AEMET / EMT / Ticketmaster). Opcional: el dashboard
+    # funciona sin claves (la vista de contexto degrada con elegancia).
+    env_file:
+      - path: .env
+        required: false
+    # Datos procesados y crudos (parquet, gtfs, cachés). Se montan en
+    # lugar de copiarse: imagen ligera y refresco de datos sin rebuild.
+    volumes:
+      - ./datos:/app/datos
+    restart: unless-stopped

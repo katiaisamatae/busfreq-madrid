@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mock-up 1 — Informe · BusFreq Madrid</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#0F75BC; --azul-osc:#0a5289; --marca:#eef5fa;
+    --tinta:#1c242b; --gris:#5f6b76; --regla:#e4e8ec; --banda:#f7f9fa;
+    --verde:#1e7a4e; --rojo:#b3362a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Public Sans',sans-serif}
+  body{background:#fff;color:var(--tinta);font-size:14.5px;line-height:1.55}
+  .num{font-variant-numeric:tabular-nums}
+  .pagina{max-width:1000px;margin:0 auto;padding:0 40px 90px}
+
+  /* -------- cabecera institucional -------- */
+  .cab{display:flex;align-items:center;justify-content:space-between;padding:22px 0 18px;border-bottom:2px solid var(--tinta)}
+  .cab .id h1{font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .cab .id p{font-size:12px;color:var(--gris)}
+  .logos{display:flex;align-items:center;gap:22px}
+  .logos img{height:34px;display:block}
+  .logos .sep{width:1px;height:30px;background:var(--regla)}
+  .navrow{display:flex;align-items:baseline;gap:28px;border-bottom:1px solid var(--regla);padding:13px 0}
+  .navrow a{font-size:13.5px;font-weight:700;color:var(--gris);text-decoration:none;cursor:pointer;padding-bottom:13px;margin-bottom:-14px;border-bottom:2px solid transparent}
+  .navrow a.act{color:var(--azul-osc);border-bottom-color:var(--azul)}
+  .navrow .estado{margin-left:auto;font-size:11.5px;color:var(--gris)}
+  .navrow .estado b{color:var(--verde);font-weight:700}
+
+  /* -------- secciones numeradas -------- */
+  section.bloque{padding:30px 0 6px}
+  .secn{display:flex;align-items:baseline;gap:14px;border-top:2px solid var(--tinta);padding-top:12px;margin-bottom:4px}
+  .secn .n{font-size:12px;font-weight:800;color:var(--azul);letter-spacing:.05em}
+  .secn h2{font-size:16px;font-weight:800;letter-spacing:-.01em}
+  .secn .porque{margin-left:auto;font-size:12px;color:var(--gris)}
+  .intro{font-size:13.5px;color:var(--gris);max-width:740px;margin:6px 0 18px}
+  .intro b{color:var(--tinta)}
+
+  /* -------- fila de cifras (sin cajas) -------- */
+  .cifras{display:grid;grid-template-columns:repeat(4,1fr);margin:14px 0 6px}
+  .cifra{padding:4px 24px 10px 0}
+  .cifra+.cifra{border-left:1px solid var(--regla);padding-left:24px}
+  .cifra .v{font-size:30px;font-weight:800;letter-spacing:-.02em}
+  .cifra .v small{font-size:15px;font-weight:600;color:var(--gris)}
+  .cifra .l{font-size:12px;color:var(--gris)}
+  .cifra .m{font-size:12px;font-weight:700;margin-top:2px}
+  .m.ok{color:var(--verde)} .m.mal{color:var(--rojo)} .m.info{color:var(--azul-osc)}
+
+  /* -------- tablas -------- */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris);text-align:left;font-weight:700;padding:8px 10px;border-bottom:1.5px solid var(--tinta)}
+  td{padding:9px 10px;border-bottom:1px solid var(--regla);vertical-align:top}
+  td.r,th.r{text-align:right}
+  tr.destacada td{background:var(--marca)}
+  .sube{color:var(--verde);font-weight:800}.baja{color:var(--rojo);font-weight:800}
+  .fuente-tag{font-size:11px;font-weight:700;color:var(--azul-osc)}
+  .pie{font-size:12px;color:var(--gris);margin-top:9px}
+  svg text{font-family:'Public Sans',sans-serif}
+  .dos{display:grid;grid-template-columns:1fr 1fr;gap:44px}
+  .oculto{display:none}
+  .selector{display:flex;gap:0;border:1px solid var(--regla);border-radius:6px;overflow:hidden;width:max-content;margin-bottom:18px}
+  .selector span{padding:7px 16px;font-size:12.5px;font-weight:600;color:var(--gris);border-right:1px solid var(--regla);cursor:pointer}
+  .selector span:last-child{border-right:0}
+  .selector span.sel{background:var(--azul);color:#fff;font-weight:700}
+</style>
+</head>
+<body>
+<div class="pagina">
+
+  <div class="cab">
+    <div class="id">
+      <h1>BusFreq Madrid</h1>
+      <p>Cuadro de mando — predicción de demanda y optimización de frecuencias · 12 líneas piloto</p>
+    </div>
+    <div class="logos">
+      <img src="../assets/logo_emt.png" alt="EMT Madrid">
+      <div class="sep"></div>
+      <img src="../assets/logo_ue.png" alt="Universidad Europea">
+    </div>
+  </div>
+
+  <div class="navrow">
+    <a id="tab-pred" class="act" onclick="ver('pred')">Predicción</a>
+    <a id="tab-hist" onclick="ver('hist')">Análisis histórico</a>
+    <span class="estado"><b>●</b> AEMET · Open-Meteo · datos.madrid.es · Ticketmaster — sincronizado hoy 07:00, sin entrada manual</span>
+  </div>
+
+<!-- ════════════════════ PREDICCIÓN ════════════════════ -->
+<div id="v-pred">
+
+  <section class="bloque">
+    <div class="secn"><span class="n">01</span><h2>Contexto detectado automáticamente</h2><span class="porque">qué va a condicionar la demanda</span></div>
+    <p class="intro">Para el <b>miércoles 15 de julio</b> el sistema ha recuperado de las APIs tres factores
+    relevantes. Ninguno ha sido introducido a mano: el clima procede de la predicción horaria y los eventos
+    del cruce agenda ↔ paradas GTFS a menos de 600 m.</p>
+
+    <div class="selector">
+      <span>lun 13</span><span>mar 14</span><span class="sel">mié 15</span><span>jue 16</span><span>vie 17</span><span>sáb 18</span><span>dom 19</span>
+    </div>
+
+    <table>
+      <tr><th>Fuente</th><th>Detección</th><th>Ventana</th><th>Líneas afectadas</th><th class="r">Efecto aplicado al modelo</th></tr>
+      <tr>
+        <td><span class="fuente-tag">AEMET · Open-Meteo</span></td>
+        <td>Lluvia 4,2 mm, probabilidad 80 % (dos fuentes coinciden)</td>
+        <td class="num">17–22 h</td><td>toda la red</td>
+        <td class="r num"><b>+6 %</b> demanda de red</td>
+      </tr>
+      <tr class="destacada">
+        <td><span class="fuente-tag">Ticketmaster</span></td>
+        <td>Concierto — Estadio Metropolitano, asistencia estimada 62 000</td>
+        <td class="num">21:00 (entrada y salida)</td><td class="num"><b>143, 70</b></td>
+        <td class="r num"><b>143 +80 % · 70 +45 %</b> en franjas 18–22 y 22–02</td>
+      </tr>
+      <tr>
+        <td><span class="fuente-tag">datos.madrid.es</span></td>
+        <td>Feria del Libro de Verano — Parque del Retiro, afluencia media</td>
+        <td class="num">11–21 h</td><td class="num">19, 61</td>
+        <td class="r num">19 +15 % · 61 +10 %</td>
+      </tr>
+    </table>
+  </section>
+
+  <section class="bloque">
+    <div class="secn"><span class="n">02</span><h2>Predicción de demanda</h2><span class="porque">modelo LightGBM + reparto intradía</span></div>
+    <div class="cifras">
+      <div class="cifra"><div class="v num">1,41 <small>M</small></div><div class="l">viajeros previstos, mié 15 jul</div><div class="m ok">+9,4 % vs. miércoles medio</div></div>
+      <div class="cifra"><div class="v num">201 400</div><div class="l">línea 143, máximo de la red</div><div class="m mal">riesgo de saturación 18–22 h</div></div>
+      <div class="cifra"><div class="v num">18–22 <small>h</small></div><div class="l">franja crítica del día</div><div class="m info">concentra lluvia + concierto</div></div>
+      <div class="cifra"><div class="v num">8,7 <small>%</small></div><div class="l">error esperado (MAPE)</div><div class="m info">validación walk-forward</div></div>
+    </div>
+
+    <svg viewBox="0 0 920 205" width="100%">
+      <line x1="42" y1="12" x2="42" y2="165" stroke="#e4e8ec"/>
+      <line x1="42" y1="165" x2="905" y2="165" stroke="#1c242b" stroke-width="1.3"/>
+      <text x="36" y="18" text-anchor="end" font-size="9.5" fill="#5f6b76">120k</text>
+      <text x="36" y="95" text-anchor="end" font-size="9.5" fill="#5f6b76">60k</text>
+      <text x="36" y="168" text-anchor="end" font-size="9.5" fill="#5f6b76">0</text>
+      <rect x="592" y="12" width="200" height="153" fill="#0F75BC" opacity=".06"/>
+      <text x="692" y="26" text-anchor="middle" font-size="10" fill="#0a5289" font-weight="700">lluvia + concierto</text>
+      <polyline fill="none" stroke="#b9c3cc" stroke-width="2" stroke-dasharray="5 4"
+        points="60,158 128,112 196,68 264,82 332,90 400,84 468,78 536,72 604,61 672,66 740,112 808,140 890,156"/>
+      <polyline fill="none" stroke="#0F75BC" stroke-width="2.5"
+        points="60,158 128,110 196,64 264,78 332,86 400,80 468,72 536,65 604,38 672,32 740,82 808,122 890,148"/>
+      <text x="62" y="184" font-size="9.5" fill="#5f6b76">4 h</text>
+      <text x="400" y="184" font-size="9.5" fill="#5f6b76" text-anchor="middle">14 h</text>
+      <text x="692" y="184" font-size="9.5" fill="#5f6b76" text-anchor="middle">20 h</text>
+      <text x="890" y="184" font-size="9.5" fill="#5f6b76" text-anchor="end">2 h</text>
+      <text x="750" y="45" font-size="10.5" fill="#0F75BC" font-weight="700">previsión con contexto</text>
+      <text x="750" y="60" font-size="10.5" fill="#8d99a3" font-weight="700">miércoles tipo</text>
+    </svg>
+  </section>
+
+  <section class="bloque">
+    <div class="secn"><span class="n">03</span><h2>Plan de flota recomendado</h2><span class="porque">ILP a flota constante — coste cero</span></div>
+    <div class="cifras">
+      <div class="cifra"><div class="v num">6,8 <small>min</small></div><div class="l">espera media con el plan</div><div class="m ok">−13,9 % frente a no actuar</div></div>
+      <div class="cifra"><div class="v num">14</div><div class="l">buses reasignados</div><div class="m info">misma flota total por franja</div></div>
+      <div class="cifra"><div class="v num">3</div><div class="l">líneas reforzadas</div><div class="m info">143, 70 y 19</div></div>
+      <div class="cifra"><div class="v num">&lt; 70 <small>%</small></div><div class="l">ocupación de las líneas que ceden</div><div class="m ok">sin degradar el servicio</div></div>
+    </div>
+
+    <div class="dos">
+      <table>
+        <tr><th>Refuerzos · 18–22 h</th><th class="r">Hoy</th><th class="r">Plan</th><th class="r">Δ</th><th class="r">Espera</th></tr>
+        <tr class="destacada"><td><b>143</b> — concierto</td><td class="r num">8</td><td class="r num">12</td><td class="r num sube">+4</td><td class="r num">−31 %</td></tr>
+        <tr class="destacada"><td><b>70</b> — concierto</td><td class="r num">9</td><td class="r num">11</td><td class="r num sube">+2</td><td class="r num">−18 %</td></tr>
+        <tr><td><b>19</b> — feria + lluvia</td><td class="r num">10</td><td class="r num">11</td><td class="r num sube">+1</td><td class="r num">−9 %</td></tr>
+      </table>
+      <table>
+        <tr><th>Ceden vehículos · 18–22 h</th><th class="r">Hoy</th><th class="r">Plan</th><th class="r">Δ</th><th class="r">Espera</th></tr>
+        <tr><td><b>29</b> — ocupación 52 %</td><td class="r num">11</td><td class="r num">9</td><td class="r num baja">−2</td><td class="r num">+4 %</td></tr>
+        <tr><td><b>56</b> — ocupación 49 %</td><td class="r num">10</td><td class="r num">8</td><td class="r num baja">−2</td><td class="r num">+5 %</td></tr>
+        <tr><td><b>14</b> — ocupación 61 %</td><td class="r num">12</td><td class="r num">10</td><td class="r num baja">−2</td><td class="r num">+3 %</td></tr>
+      </table>
+    </div>
+    <p class="pie">Las líneas 82, 61, 115, 46, 210 y 22 mantienen su asignación. El plan completo por franja se despliega en la vista de detalle.</p>
+  </section>
+
+</div>
+
+<!-- ════════════════════ HISTÓRICO ════════════════════ -->
+<div id="v-hist" class="oculto">
+
+  <section class="bloque">
+    <div class="secn"><span class="n">01</span><h2>Resultados del periodo — abril 2026</h2><span class="porque">qué pasó y cómo lo predijo el modelo</span></div>
+    <div class="cifras">
+      <div class="cifra"><div class="v num">38,1 <small>M</small></div><div class="l">viajeros reales del mes</div><div class="m ok">+3,2 % vs. abril 2025</div></div>
+      <div class="cifra"><div class="v num">8,7 <small>%</small></div><div class="l">MAPE del modelo</div><div class="m ok">−50 % frente al baseline naive</div></div>
+      <div class="cifra"><div class="v num">17<small>/30</small></div><div class="l">días con desajuste oferta-demanda</div><div class="m mal">detectados a posteriori</div></div>
+      <div class="cifra"><div class="v num">412 <small>h</small></div><div class="l">espera evitable acumulada</div><div class="m mal">con la flota ya disponible</div></div>
+    </div>
+
+    <svg viewBox="0 0 920 190" width="100%">
+      <line x1="42" y1="10" x2="42" y2="152" stroke="#e4e8ec"/>
+      <line x1="42" y1="152" x2="905" y2="152" stroke="#1c242b" stroke-width="1.3"/>
+      <text x="36" y="16" text-anchor="end" font-size="9.5" fill="#5f6b76">1,6 M</text>
+      <text x="36" y="155" text-anchor="end" font-size="9.5" fill="#5f6b76">0,4 M</text>
+      <rect x="590" y="10" width="34" height="142" fill="#b3362a" opacity=".08"/>
+      <text x="607" y="24" text-anchor="middle" font-size="9.5" fill="#b3362a" font-weight="700">18–19 abr</text>
+      <polyline fill="none" stroke="#0F75BC" stroke-width="2.2"
+        points="52,48 82,44 112,47 142,41 172,53 202,118 232,133 262,46 292,43 322,39 352,38 382,50 412,116 442,131 472,44 502,41 532,37 562,35 592,48 622,114 652,128 682,39 712,36 742,34 772,34 802,46 832,112 862,126 892,36"/>
+      <polyline fill="none" stroke="#b9c3cc" stroke-width="1.8" stroke-dasharray="5 4"
+        points="52,54 82,47 112,51 142,46 172,59 202,123 232,137 262,51 292,47 322,43 352,42 382,55 412,120 442,135 472,49 502,45 532,41 562,39 592,54 622,118 652,132 682,44 712,40 742,38 772,38 802,52 832,116 862,130 892,41"/>
+      <text x="806" y="28" font-size="10.5" fill="#0F75BC" font-weight="700">real</text>
+      <text x="806" y="43" font-size="10.5" fill="#8d99a3" font-weight="700">predicho</text>
+      <text x="52" y="172" font-size="9.5" fill="#5f6b76">1 abr</text>
+      <text x="472" y="172" font-size="9.5" fill="#5f6b76" text-anchor="middle">15 abr</text>
+      <text x="892" y="172" font-size="9.5" fill="#5f6b76" text-anchor="end">30 abr</text>
+    </svg>
+  </section>
+
+  <section class="bloque">
+    <div class="secn"><span class="n">02</span><h2>Diagnóstico: qué se hizo mal</h2><span class="porque">todos los desajustes eran anticipables con las APIs</span></div>
+    <p class="intro">El optimizador, ejecutado a posteriori con la demanda real, cuantifica cada desajuste.
+    La columna final identifica la <b>fuente que lo habría anticipado</b> — es la motivación directa de la
+    vista de predicción automática.</p>
+    <table>
+      <tr><th>Fecha</th><th>Línea</th><th>Franja</th><th>Causa identificada</th><th class="r">Ocupación</th><th class="r">Real → óptimo</th><th class="r">Espera evitable</th><th>Lo habría anticipado</th></tr>
+      <tr class="destacada"><td class="num">sáb 18 abr</td><td><b>82</b></td><td class="num">18–22</td><td>Partido en el Bernabéu sin refuerzo</td><td class="r num baja">96 %</td><td class="r num">7 → 10</td><td class="r num">−31 %</td><td><span class="fuente-tag">Ticketmaster</span></td></tr>
+      <tr class="destacada"><td class="num">sáb 18 abr</td><td><b>143</b></td><td class="num">22–02</td><td>Salida del evento, oferta nocturna plana</td><td class="r num baja">91 %</td><td class="r num">5 → 7</td><td class="r num">−28 %</td><td><span class="fuente-tag">Ticketmaster</span></td></tr>
+      <tr><td class="num">mar 7 abr</td><td><b>19</b></td><td class="num">7–10</td><td>Lluvia intensa (11 mm), demanda +8 %</td><td class="r num baja">88 %</td><td class="r num">9 → 11</td><td class="r num">−17 %</td><td><span class="fuente-tag">AEMET</span></td></tr>
+      <tr><td class="num">dom 12 abr</td><td><b>29</b></td><td class="num">10–14</td><td>Sobreoferta dominical, flota ociosa</td><td class="r num sube">31 %</td><td class="r num">10 → 6</td><td class="r num">reasignable</td><td><span class="fuente-tag">calendario</span></td></tr>
+      <tr><td class="num">jue 23 abr</td><td><b>61</b></td><td class="num">17–21</td><td>Evento cultural del Retiro ignorado</td><td class="r num baja">84 %</td><td class="r num">8 → 9</td><td class="r num">−11 %</td><td><span class="fuente-tag">datos.madrid.es</span></td></tr>
+    </table>
+    <p class="pie">Ocupación según el histórico de saturación; el óptimo es el resultado del ILP con demanda real conocida.</p>
+  </section>
+
+</div>
+
+</div>
+<script>
+function ver(v){
+  document.getElementById('v-pred').classList.toggle('oculto', v!=='pred');
+  document.getElementById('v-hist').classList.toggle('oculto', v!=='hist');
+  document.getElementById('tab-pred').classList.toggle('act', v==='pred');
+  document.getElementById('tab-hist').classList.toggle('act', v==='hist');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: codigo/back
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ../../requirements-api.txt
+          pip install pytest ruff pyyaml
+      - name: Ruff (lint)
+        run: ruff check . ../notebooks
+      - name: Pytest
+        run: pytest tests/ -q

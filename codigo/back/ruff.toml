@@ -1,0 +1,6 @@
+# Configuración de ruff para el backend (usada por el CI: `ruff check`).
+line-length = 100
+
+[lint]
+# l = línea, f = franja: nombres de una letra idiomáticos del dominio del optimizador.
+ignore = ["E741"]
